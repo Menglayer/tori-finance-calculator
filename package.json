@@ -1,0 +1,11 @@
+{
+  "name": "tori-cores-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/calculator.test.mjs",
+    "check": "node --check calculator.js && node --check app.js && node --check scripts/update-leaderboard.mjs",
+    "sync-data": "node scripts/update-leaderboard.mjs"
+  }
+}
