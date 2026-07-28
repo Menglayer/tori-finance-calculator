@@ -70,6 +70,10 @@ test('YT accrual stops at expiry and residual goes to zero at expiry', () => {
   assert.equal(result.baseYield, result.notional * 0.1 * (expiryDays / 365) * 0.97);
 });
 
+test('default airdrop date resolves to the YT maturity horizon', () => {
+  assert.equal(daysUntil('2026-11-26', NOW), 121);
+});
+
 test('network projection compounds the scenario growth and includes user incremental Cores', () => {
   const projected = projectNetworkTotal(1_000_000, 1, 2, 5_000);
   assert.equal(projected, 1_025_100);

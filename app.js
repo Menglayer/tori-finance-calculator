@@ -3,6 +3,7 @@ import {
   STRATEGIES,
   YT_MARKETS,
   calculateScenario,
+  daysUntil,
 } from './calculator.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -13,20 +14,21 @@ const copy = {
     brandSub: '社区情景计算器', totalCores: '全网 Cores', totalWallets: '参与钱包', dataAge: '数据时间',
     viewMultipliers: '查看倍率', verifiedDate: '倍率核对于 2026-07-28', heroTitle: '估算你的 Tori Cores<br><span>与潜在空投价值</span>',
     heroCopy: '组合多种 Tori 机会，使用实时 Pendle YT 价格与排行榜总量，建立自己的情景假设。',
-    openTori: '打开 Tori Opportunities ↗', readRules: '阅读官方 Cores 规则 ↗', sourceStatus: '官方数据源已连接',
-    sourceNote: '排行榜为定时缓存；Pendle 价格由浏览器实时读取', myPositions: '我的仓位', positionSubtitle: '普通仓位按美元名义金额计分',
-    currentCores: '当前 Cores', simulationDays: '模拟天数', walletLookup: '从 Top 100 查询钱包', lookup: '查询',
+    openTori: '打开 Tori Opportunities ↗', readRules: '阅读官方 Cores 规则 ↗',
+    boostTitle: '现在加入 Tori · 获取额外积分 BOOST', boostCopy: '使用专属邀请链接开始赚取 Cores', boostAction: '立即加入 ↗',
+    myPositions: '我的仓位', positionSubtitle: '普通仓位按美元名义金额计分',
+    currentCores: '当前 Cores', airdropDate: '预计空投日期', targetDays: '距目标 {days} 天', walletLookup: '从 Top 100 查询钱包', lookup: '查询',
     walletHint: '仅覆盖官方接口公开的前 100 名。', positionDetails: '持仓详情', addPosition: '添加仓位',
     positionDaily: '普通仓位每日 Cores', referralInput: '被邀请人合计每日 Cores', referralHint: '你获得其 Cores 的 10%，不扣减对方积分。',
-    assumptions: '估值假设', assumptionSubtitle: 'Tori 尚未公布这些参数', assumptionWarning: 'FDV 与空投比例必须由你自行设定；页面不会把示例情景冒充官方信息。',
-    fdv: 'TGE 时 FDV（USD）', airdropPercent: 'Cores 空投占比（%）', notPublished: '未公布', networkGrowth: '全网 Cores 每日增长（%）',
-    networkGrowthHint: '情景参数；0% 表示只加入你新增的 Cores', currentNetworkTotal: '接口当前全网总量',
+    assumptions: '估值假设', assumptionSubtitle: '默认情景可随时修改，均非官方参数',
+    fdv: 'TGE 时 FDV（USD）', airdropPercent: 'Cores 空投占比（%）', networkGrowth: '全网 Cores 每日增长（%）',
+    currentNetworkTotal: '接口当前全网总量',
     ytLab: 'Pendle YT 实时实验室', ytSubtitle: '按 YT 数量与底层名义本金计算，不把买入成本当作计分本金', syncing: '同步中',
     ytType: 'YT 类型', ytPrice: 'YT 单价（USD）', ytInvestment: '买入成本（USD）',
     ytFeeNote: 'Pendle 将底层收益与积分流向 YT，计算按官方文档扣除 3% YT 费；实际 Tori 记分结果以项目后台为准。',
     ytQuantity: 'YT 数量', ytLeverage: '名义杠杆', ytNotional: '计分名义本金', ytDaily: 'YT 每日 Cores', ytPointDays: '有效计分天数', ytExpiry: '到期日',
     leaderboard: '实时排行榜快照', leaderboardSubtitle: '官方接口 Top 5', viewAll: '查看全部 ↗', wallet: '钱包', share: '占比',
-    scenarioOutput: '情景输出', resultsTitle: '你的情景结果', assumptionPrompt: '填写 FDV 与空投占比后显示估值。',
+    scenarioOutput: '情景输出', resultsTitle: '你的情景结果',
     airdropValue: '预估空投价值', projectedCores: '模拟结束时我的 Cores', millionValue: '每 1M Cores 价值', basedOnProjectedTotal: '按预测全网总量',
     coresApy: '新增仓位 Cores APY', networkProjected: '预测全网累计 Cores', includesYourNew: '含你的新增 Cores',
     ytTotal: 'YT 至模拟结束 Cores', ytNet: 'YT 预估净收益', ytRoi: 'YT ROI', ytRoiHint: '空投 + 底息 + 线性残值 − 成本',
@@ -44,20 +46,21 @@ const copy = {
     brandSub: 'Community scenario calculator', totalCores: 'Network Cores', totalWallets: 'Wallets', dataAge: 'Data time',
     viewMultipliers: 'Multipliers', verifiedDate: 'Multipliers checked 2026-07-28', heroTitle: 'Estimate your Tori Cores<br><span>and potential airdrop value</span>',
     heroCopy: 'Combine Tori opportunities with live Pendle YT prices and leaderboard totals to build your own scenario.',
-    openTori: 'Open Tori Opportunities ↗', readRules: 'Read official Cores rules ↗', sourceStatus: 'Official sources connected',
-    sourceNote: 'Leaderboard is cached on a schedule; Pendle prices load live in-browser', myPositions: 'My positions', positionSubtitle: 'Standard positions accrue on USD notional',
-    currentCores: 'Current Cores', simulationDays: 'Simulation days', walletLookup: 'Look up a Top 100 wallet', lookup: 'Look up',
+    openTori: 'Open Tori Opportunities ↗', readRules: 'Read official Cores rules ↗',
+    boostTitle: 'Join Tori now · Get an extra points BOOST', boostCopy: 'Start earning Cores with the referral link', boostAction: 'Join now ↗',
+    myPositions: 'My positions', positionSubtitle: 'Standard positions accrue on USD notional',
+    currentCores: 'Current Cores', airdropDate: 'Expected airdrop date', targetDays: '{days} days to target', walletLookup: 'Look up a Top 100 wallet', lookup: 'Look up',
     walletHint: 'Only the public Top 100 returned by the official endpoint.', positionDetails: 'Position details', addPosition: 'Add position',
     positionDaily: 'Standard position Cores / day', referralInput: 'Combined referred-user Cores / day', referralHint: 'You receive 10% on top; their Cores are not reduced.',
-    assumptions: 'Valuation assumptions', assumptionSubtitle: 'Tori has not published these parameters', assumptionWarning: 'You must supply FDV and allocation. The calculator never presents sample scenarios as official values.',
-    fdv: 'FDV at TGE (USD)', airdropPercent: 'Cores allocation (%)', notPublished: 'Not published', networkGrowth: 'Network Cores daily growth (%)',
-    networkGrowthHint: 'Scenario input; 0% adds only your new Cores', currentNetworkTotal: 'Current total from endpoint',
+    assumptions: 'Valuation assumptions', assumptionSubtitle: 'Editable scenario defaults; none are official parameters',
+    fdv: 'FDV at TGE (USD)', airdropPercent: 'Cores allocation (%)', networkGrowth: 'Network Cores daily growth (%)',
+    currentNetworkTotal: 'Current total from endpoint',
     ytLab: 'Live Pendle YT lab', ytSubtitle: 'Uses YT quantity and underlying notional—not purchase cost—as the points base', syncing: 'Syncing',
     ytType: 'YT type', ytPrice: 'YT price (USD)', ytInvestment: 'Purchase cost (USD)',
     ytFeeNote: 'Pendle streams yield and points to YT. The model applies the documented 3% YT fee; actual Tori accounting remains authoritative.',
     ytQuantity: 'YT quantity', ytLeverage: 'Notional leverage', ytNotional: 'Points notional', ytDaily: 'YT Cores / day', ytPointDays: 'Accrual days', ytExpiry: 'Expiry',
     leaderboard: 'Leaderboard snapshot', leaderboardSubtitle: 'Official endpoint Top 5', viewAll: 'View all ↗', wallet: 'Wallet', share: 'Share',
-    scenarioOutput: 'SCENARIO OUTPUT', resultsTitle: 'Your scenario results', assumptionPrompt: 'Enter FDV and allocation to unlock valuation.',
+    scenarioOutput: 'SCENARIO OUTPUT', resultsTitle: 'Your scenario results',
     airdropValue: 'Estimated airdrop value', projectedCores: 'My Cores at simulation end', millionValue: 'Value per 1M Cores', basedOnProjectedTotal: 'Based on projected network total',
     coresApy: 'New-position Cores APY', networkProjected: 'Projected network Cores', includesYourNew: 'Includes your new Cores',
     ytTotal: 'YT Cores through simulation', ytNet: 'Estimated YT net profit', ytRoi: 'YT ROI', ytRoiHint: 'Airdrop + base yield + linear residual − cost',
@@ -329,11 +332,12 @@ function updatePositionCards(result) {
 function updateScenario() {
   const meta = getSelectedYtMeta();
   const market = { ...meta.market, expiry: meta.expiry };
+  const simulationDays = daysUntil($('#airdropDate').value);
   const result = calculateScenario({
     currentCores: valueOf('currentCores'),
     positions: state.positions,
     referredDailyCores: valueOf('referredDailyCores'),
-    days: valueOf('simulationDays'),
+    days: simulationDays,
     networkTotal: state.leaderboard.totalPoints,
     networkDailyGrowthPercent: valueOf('networkGrowth'),
     fdv: valueOf('fdv'),
@@ -349,6 +353,7 @@ function updateScenario() {
   });
   const hasValuation = result.tokenPoolValue > 0;
 
+  $('#airdropDateHint').textContent = t('targetDays', { days: simulationDays });
   updatePositionCards(result);
   $('#positionDailyTotal').textContent = formatNumber(result.positionDailyCores, 0);
   $('#ytQuantity').textContent = formatNumber(result.yt.quantity, 4);
@@ -375,8 +380,7 @@ function updateScenario() {
       airdrop: formatCurrency(result.yt.airdropValue, 0), yield: formatCurrency(result.yt.baseYield, 0),
       residual: formatCurrency(result.yt.residualValue, 0), cost: formatCurrency(result.yt.investment, 0),
     })
-    : t('assumptionPrompt');
-  $('#assumptionPrompt').style.visibility = hasValuation ? 'hidden' : 'visible';
+    : '—';
 }
 
 function lookupWallet() {
@@ -412,7 +416,7 @@ function bindEvents() {
     renderPositions();
     updateScenario();
   });
-  ['currentCores', 'simulationDays', 'referredDailyCores', 'fdv', 'airdropPercent', 'networkGrowth', 'ytPrice', 'ytInvestment']
+  ['currentCores', 'airdropDate', 'referredDailyCores', 'fdv', 'airdropPercent', 'networkGrowth', 'ytPrice', 'ytInvestment']
     .forEach((id) => $(`#${id}`).addEventListener('input', updateScenario));
   $('#ytType').addEventListener('change', () => { syncYtPrice(true); updateScenario(); });
   $('#lookupWallet').addEventListener('click', lookupWallet);
