@@ -113,24 +113,25 @@ button { color: inherit; cursor: pointer; }
 .ghost-button:hover, .outline-button:hover { border-color: var(--accent); color: var(--accent-strong); background: var(--accent-wash-strong); }
 
 .boost-banner {
-  min-height: 58px;
-  padding: 10px clamp(18px, 4vw, 64px);
+  min-height: 68px;
+  padding: 11px clamp(18px, 4vw, 64px);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 13px;
+  gap: 15px;
   color: var(--on-accent);
-  background: linear-gradient(90deg, #0891b2, #1da7cd 58%, #0891b2);
-  border-bottom: 1px solid rgba(0,0,0,.10);
+  background: linear-gradient(105deg, #06799e, #1da7cd 50%, #0e7490);
+  border-block: 1px solid rgba(165, 243, 252, .55);
   text-decoration: none;
-  box-shadow: 0 8px 28px rgba(8,145,178,.18);
-  transition: filter .2s ease;
+  box-shadow: 0 10px 32px rgba(8,145,178,.24);
+  transition: filter .2s ease, box-shadow .2s ease;
 }
-.boost-banner:hover { filter: brightness(1.05); }
-.boost-kicker { padding: 5px 8px; color: var(--text); background: var(--accent-pale); font: 11px/1 var(--mono); letter-spacing: .10em; }
-.boost-banner strong { font-size: 16px; line-height: 1.25; letter-spacing: -.01em; }
+.boost-banner:hover { filter: brightness(1.06); box-shadow: 0 14px 38px rgba(8,145,178,.30); }
+.boost-kicker { padding: 6px 9px; color: var(--text); background: var(--accent-pale); font: 11px/1 var(--mono); letter-spacing: .10em; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+.boost-banner strong { font-size: 18px; line-height: 1.25; letter-spacing: -.015em; }
 .boost-copy { color: var(--on-accent-muted); font-size: 14px; line-height: 1.3; }
-.boost-action { margin-left: 8px; font: 12px/1.2 var(--mono); border-bottom: 1px solid var(--on-accent-muted); }
+.boost-action { margin-left: 12px; padding: 11px 16px; color: var(--text); background: var(--accent-pale); border: 1px solid rgba(255,255,255,.58); border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.16); font: 700 13px/1.2 var(--sans); transition: transform .2s ease, box-shadow .2s ease; }
+.boost-banner:hover .boost-action { transform: translateX(3px); box-shadow: 0 8px 22px rgba(0,0,0,.20); }
 
 .page-shell { width: min(1460px, 100%); margin: 0 auto; padding: 0 clamp(18px, 4vw, 64px) 64px; }
 
@@ -271,9 +272,12 @@ button { color: inherit; cursor: pointer; }
 footer { padding: 32px clamp(18px, 4vw, 64px) 42px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; color: var(--muted); font: 12px/1.65 var(--mono); }
 footer p { margin: 0; }
 footer p:first-child { max-width: 760px; }
-footer p:last-child { display: flex; gap: 10px; white-space: nowrap; }
+footer p:last-child { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
 footer a { color: var(--label); text-decoration: none; }
 footer a:hover { color: var(--accent); }
+.author-link { padding: 5px 9px; color: var(--accent-strong); background: var(--accent-wash); border: 1px solid var(--accent-wash-strong); border-radius: 999px; }
+.author-link:hover { color: var(--text); background: var(--accent-wash-strong); }
+.author-link strong { color: inherit; }
 
 dialog { width: min(860px, calc(100vw - 30px)); max-height: min(760px, calc(100vh - 30px)); padding: 0; color: var(--text); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 16px; box-shadow: 0 25px 100px var(--dialog-shadow); }
 dialog::backdrop { background: var(--overlay); backdrop-filter: blur(8px); }
