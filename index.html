@@ -77,17 +77,8 @@
           </label>
         </div>
 
-        <div class="wallet-lookup">
-          <label for="walletAddress" data-i18n="walletLookup">从 Top 100 查询钱包</label>
-          <div class="lookup-row">
-            <input id="walletAddress" type="text" autocomplete="off" spellcheck="false" placeholder="0x…">
-            <button id="lookupWallet" class="mini-button" type="button" data-i18n="lookup">查询</button>
-          </div>
-          <p id="walletMessage" class="helper-text" aria-live="polite" data-i18n="walletHint">仅覆盖官方接口公开的前 100 名。</p>
-        </div>
-
         <div class="section-rule"><span data-i18n="positionDetails">持仓详情</span></div>
-        <div id="positionsList" class="positions-list"></div>
+        <div id="positionsList" class="positions-list" aria-live="polite"></div>
         <button class="add-position" id="addPosition" type="button"><span>＋</span><span data-i18n="addPosition">添加仓位</span></button>
 
         <div class="summary-bar">
@@ -95,11 +86,6 @@
           <strong id="positionDailyTotal">0</strong>
         </div>
 
-        <label class="field referral-field">
-          <span data-i18n="referralInput">被邀请人合计每日 Cores</span>
-          <input id="referredDailyCores" type="number" min="0" step="1000" value="0" inputmode="decimal">
-          <small data-i18n="referralHint">你获得其 Cores 的 10%，不扣减对方积分。</small>
-        </label>
       </article>
 
       <article class="panel assumptions-panel">

@@ -17,9 +17,8 @@ const copy = {
     openTori: '打开 Tori Opportunities ↗', readRules: '阅读官方 Cores 规则 ↗',
     boostTitle: '现在加入 Tori · 获取额外积分 BOOST', boostCopy: '使用专属邀请链接开始赚取 Cores', boostAction: '立即加入 ↗',
     myPositions: '我的仓位', positionSubtitle: '普通仓位按美元名义金额计分',
-    currentCores: '当前 Cores', airdropDate: '预计空投日期', targetDays: '距目标 {days} 天', walletLookup: '从 Top 100 查询钱包', lookup: '查询',
-    walletHint: '仅覆盖官方接口公开的前 100 名。', positionDetails: '持仓详情', addPosition: '添加仓位',
-    positionDaily: '普通仓位每日 Cores', referralInput: '被邀请人合计每日 Cores', referralHint: '你获得其 Cores 的 10%，不扣减对方积分。',
+    currentCores: '当前 Cores', airdropDate: '预计空投日期', targetDays: '距目标 {days} 天', positionDetails: '持仓详情', addPosition: '添加仓位',
+    emptyPositions: '暂无持仓', emptyPositionsHint: '点击“添加仓位”开始建立计算情景。', positionDaily: '普通仓位每日 Cores',
     assumptions: '估值假设', assumptionSubtitle: '默认情景可随时修改，均非官方参数',
     fdv: 'TGE 时 FDV（USD）', airdropPercent: 'Cores 空投占比（%）', networkGrowth: '全网 Cores 每日增长（%）',
     currentNetworkTotal: '接口当前全网总量',
@@ -39,8 +38,7 @@ const copy = {
     strategy: '策略', category: '类别', dailyMultiplier: 'Cores / $ / day', amount: '名义金额（USD）', dailyEarning: '每日 Cores',
     delete: '删除', live: '实时', snapshot: '快照', synced: '已同步', days: '天', capital: '投入', newCores: '新增',
     ytBreakdown: '空投 {airdrop} · 底息 {yield} · 残值 {residual} · 成本 -{cost}',
-    walletFound: '已载入第 {rank} 名钱包：{points} Cores。', walletMissing: '该钱包不在公开 Top 100，请手动填写当前 Cores。',
-    walletInvalid: '请输入完整的 EVM 钱包地址。', dataFallback: '正在使用随站点发布的排行榜快照', livePriceMeta: '{source}价格 {price} · 底层 APY {apy} · 更新 {time}',
+    dataFallback: '正在使用随站点发布的排行榜快照', livePriceMeta: '{source}价格 {price} · 底层 APY {apy} · 更新 {time}',
   },
   en: {
     brandSub: 'Community scenario calculator', totalCores: 'Network Cores', totalWallets: 'Wallets', dataAge: 'Data time',
@@ -49,9 +47,8 @@ const copy = {
     openTori: 'Open Tori Opportunities ↗', readRules: 'Read official Cores rules ↗',
     boostTitle: 'Join Tori now · Get an extra points BOOST', boostCopy: 'Start earning Cores with the referral link', boostAction: 'Join now ↗',
     myPositions: 'My positions', positionSubtitle: 'Standard positions accrue on USD notional',
-    currentCores: 'Current Cores', airdropDate: 'Expected airdrop date', targetDays: '{days} days to target', walletLookup: 'Look up a Top 100 wallet', lookup: 'Look up',
-    walletHint: 'Only the public Top 100 returned by the official endpoint.', positionDetails: 'Position details', addPosition: 'Add position',
-    positionDaily: 'Standard position Cores / day', referralInput: 'Combined referred-user Cores / day', referralHint: 'You receive 10% on top; their Cores are not reduced.',
+    currentCores: 'Current Cores', airdropDate: 'Expected airdrop date', targetDays: '{days} days to target', positionDetails: 'Position details', addPosition: 'Add position',
+    emptyPositions: 'No positions yet', emptyPositionsHint: 'Select “Add position” to start building your scenario.', positionDaily: 'Standard position Cores / day',
     assumptions: 'Valuation assumptions', assumptionSubtitle: 'Editable scenario defaults; none are official parameters',
     fdv: 'FDV at TGE (USD)', airdropPercent: 'Cores allocation (%)', networkGrowth: 'Network Cores daily growth (%)',
     currentNetworkTotal: 'Current total from endpoint',
@@ -71,8 +68,7 @@ const copy = {
     strategy: 'Strategy', category: 'Category', dailyMultiplier: 'Cores / $ / day', amount: 'Notional (USD)', dailyEarning: 'Daily Cores',
     delete: 'Delete', live: 'Live', snapshot: 'Snapshot', synced: 'Synced', days: 'days', capital: 'capital', newCores: 'new',
     ytBreakdown: 'Airdrop {airdrop} · yield {yield} · residual {residual} · cost -{cost}',
-    walletFound: 'Loaded rank #{rank}: {points} Cores.', walletMissing: 'This wallet is not in the public Top 100. Enter current Cores manually.',
-    walletInvalid: 'Enter a complete EVM wallet address.', dataFallback: 'Using the leaderboard snapshot bundled with this deployment', livePriceMeta: '{source} price {price} · underlying APY {apy} · updated {time}',
+    dataFallback: 'Using the leaderboard snapshot bundled with this deployment', livePriceMeta: '{source} price {price} · underlying APY {apy} · updated {time}',
   },
 };
 
@@ -158,13 +154,22 @@ function applyLanguage() {
 function renderPositions() {
   const list = $('#positionsList');
   list.innerHTML = '';
+  if (state.positions.length === 0) {
+    list.innerHTML = `
+      <div class="positions-empty">
+        <span aria-hidden="true">0</span>
+        <strong>${t('emptyPositions')}</strong>
+        <p>${t('emptyPositionsHint')}</p>
+      </div>`;
+    return;
+  }
   state.positions.forEach((position, index) => {
     const card = document.createElement('div');
     card.className = 'position-card';
     card.dataset.positionId = String(position.id);
     const options = STRATEGIES.map((strategy) => `<option value="${strategy.id}"${strategy.id === position.strategyId ? ' selected' : ''}>${strategyLabel(strategy)} (${strategy.multiplier}x)</option>`).join('');
     card.innerHTML = `
-      <div class="position-card-head"><span>#${index + 1}</span><button class="delete-position" type="button" aria-label="${t('delete')}" ${state.positions.length === 1 ? 'disabled' : ''}>×</button></div>
+      <div class="position-card-head"><span>#${index + 1}</span><button class="delete-position" type="button" aria-label="${t('delete')}">×</button></div>
       <div class="position-fields">
         <label class="position-field-label"><span>${t('strategy')}</span><select class="strategy-select">${options}</select></label>
         <label class="position-field-label"><span>${t('amount')}</span><input class="amount-input" type="number" min="0" step="100" value="${position.amount}" inputmode="decimal"></label>
@@ -186,7 +191,6 @@ function renderPositions() {
     updateScenario();
   }));
   $$('.delete-position', list).forEach((button) => button.addEventListener('click', (event) => {
-    if (state.positions.length === 1) return;
     const id = Number(event.target.closest('.position-card').dataset.positionId);
     state.positions = state.positions.filter((position) => position.id !== id);
     renderPositions();
@@ -336,7 +340,6 @@ function updateScenario() {
   const result = calculateScenario({
     currentCores: valueOf('currentCores'),
     positions: state.positions,
-    referredDailyCores: valueOf('referredDailyCores'),
     days: simulationDays,
     networkTotal: state.leaderboard.totalPoints,
     networkDailyGrowthPercent: valueOf('networkGrowth'),
@@ -383,27 +386,6 @@ function updateScenario() {
     : '—';
 }
 
-function lookupWallet() {
-  const input = $('#walletAddress').value.trim().toLowerCase();
-  const message = $('#walletMessage');
-  message.className = 'helper-text';
-  if (!/^0x[a-f0-9]{40}$/.test(input)) {
-    message.textContent = t('walletInvalid');
-    message.classList.add('error');
-    return;
-  }
-  const match = state.leaderboard.leaderboard.find((entry) => entry.user.toLowerCase() === input);
-  if (!match) {
-    message.textContent = t('walletMissing');
-    message.classList.add('error');
-    return;
-  }
-  $('#currentCores').value = String(match.points);
-  message.textContent = t('walletFound', { rank: match.rank, points: formatNumber(match.points) });
-  message.classList.add('success');
-  updateScenario();
-}
-
 function bindEvents() {
   $('#languageButton').addEventListener('click', () => {
     state.locale = state.locale === 'zh' ? 'en' : 'zh';
@@ -416,11 +398,9 @@ function bindEvents() {
     renderPositions();
     updateScenario();
   });
-  ['currentCores', 'airdropDate', 'referredDailyCores', 'fdv', 'airdropPercent', 'networkGrowth', 'ytPrice', 'ytInvestment']
+  ['currentCores', 'airdropDate', 'fdv', 'airdropPercent', 'networkGrowth', 'ytPrice', 'ytInvestment']
     .forEach((id) => $(`#${id}`).addEventListener('input', updateScenario));
   $('#ytType').addEventListener('change', () => { syncYtPrice(true); updateScenario(); });
-  $('#lookupWallet').addEventListener('click', lookupWallet);
-  $('#walletAddress').addEventListener('keydown', (event) => { if (event.key === 'Enter') lookupWallet(); });
 
   const dialog = $('#multipliersDialog');
   $('#openMultipliers').addEventListener('click', () => dialog.showModal());

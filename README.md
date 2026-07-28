@@ -7,7 +7,6 @@
 ## 已研究并落实的规则
 
 - 普通仓位：`每日 Cores = 美元名义金额 × Tori Opportunities 当前倍率`。
-- 推荐奖励：官方规则为被邀请人所获 Cores 的 10%，奖励额外发放，不扣减对方积分。
 - Pendle YT：`YT 数量 = 买入金额 ÷ 实时 YT 价格`；`计分名义本金 = YT 数量 × 底层资产价格`。1 YT 获取 1 单位底层资产的收益和积分，计算按 Pendle 文档扣除 3% YT 费。
 - YT 计分与底息在模拟结束或 YT 到期的较早日期停止；若模拟结束早于到期，残值以当前 YT 成本按剩余期限线性估算。该残值仅为情景近似。
 - 估值：`空投池价值 = FDV × Cores 空投占比`；`个人估值 = 空投池价值 × 个人预测 Cores ÷ 预测全网 Cores`。
@@ -19,7 +18,7 @@
 - 倍率：人工核对 [Tori Opportunities](https://app.tori.finance/opportunities)，最后核对日期为 2026-07-28。
 - 排行榜：[Tori leaderboard API](https://app.tori.finance/api/leaderboard)。接口没有 `Access-Control-Allow-Origin`，GitHub Pages 无法在访问时直接跨域读取。部署工作流每 30 分钟抓取一次并写入同源 `data/leaderboard.json`。
 - YT 价格、底层价格、APY 与到期日：浏览器直接读取 Pendle 官方市场 API；该接口允许跨域。读取失败时使用页面内明确标记的 2026-07-28 快照。
-- 官方规则：[Tori Cores](https://docs.tori.finance/resources/cores)、[Referral Program](https://docs.tori.finance/resources/referral)、[Pendle Points Trading](https://docs.pendle.finance/pendle-academy/ecosystem-and-resources/points-trading)。
+- 官方规则：[Tori Cores](https://docs.tori.finance/resources/cores)、[Pendle Points Trading](https://docs.pendle.finance/pendle-academy/ecosystem-and-resources/points-trading)。
 
 ## 本地运行与验证
 
